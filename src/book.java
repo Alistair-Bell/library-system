@@ -24,7 +24,6 @@ public final class book {
 	public long       _words;
 	public book_genre _genre;
 
-
 	/* Create a dummy book, this can be used for testing. */
 	public book() {
 		_name      = "Dummy";
@@ -36,7 +35,15 @@ public final class book {
 		/* Do this field last as the generator uses other fields to create an unique id. */
 		_id        = book.generate_id(this);
 	}
-
+	public book(String __name, String __author, String __isbn, long __pages, long __words, book_genre __genre) {
+		_name      = __name;
+		_author    = __author;
+		_isbn      = __isbn;
+		_pages     = __pages;
+		_words     = __words;
+		_genre     = __genre;
+		_id        = book.generate_id(this);
+	}
 	public static long generate_id(final book __in) {
 		final long segments = 0x6b05eded9ac0e764l;
 		long accumilator = __in._name.hashCode() + __in._author.hashCode() + ((int)(__in._words / __in._pages));
