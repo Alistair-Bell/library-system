@@ -1,66 +1,65 @@
 /*
- * License: read `license.txt` at the root of the project.
+ * Copyright (C) 2022 Alistair Bell <alistair@alistairbell.xyz>
+ * License: see `license.txt` at the project.
  */
 
 package alistairbell.xyz;
 
 import java.util.ArrayList;
-import java.util.Scanner;
 
+public class database<T> {
+	private int    _perms_modify_mask;
+	private int    _perms_insert_mask;
+	private int    _perms_delete_mask;
+	private String _dir;
+	private ArrayList<T> _objects;
 
-public final class database {
-	private ArrayList<book>  _books;
-
-	public boolean add(user __user) {
-		if ((__user._perms & user_perms.bit_insert_book) == 0) {
-			System.out.printf("%s does not have permission to insert a book.\n", __user._name_first);	
+	database(final int __modify_mask, final int __insert_mask, final int __delete_mask, String __dir) {
+		_objects           = new ArrayList<T>();
+		_perms_modify_mask = __modify_mask;
+		_perms_insert_mask = __insert_mask;
+		_perms_delete_mask = __delete_mask;
+		_dir               = __dir;
+	}
+	public boolean insert(final int __perms, final T __target) {
+		if ((__perms & _perms_insert_mask) == 0) {
+			System.out.println("Database cannot insert object, permission check failed.\n");
 			return false;
 		}
-		_books.add(new book(new Scanner(System.in)));
+		/* Check if it exists. */
+		if (get(__target) != -1) {
+			System.out.println("Database duplicate found, aborting insertion.\n");
+			return false;
+		}
+		return _objects.add(__target);
+	}
+	public boolean modify(final int __perms, final int __index, final T __override) {
+		if ((__perms & _perms_modify_mask) == 0) {
+			System.out.println("Database cannot insert object, permission check failed.\n");
+			return false;
+		}
+		/* Upload our new value. */
+		_objects.set(__index, __override);
 		return true;
 	}
-	public boolean add(user __user, book __book) {
-		if ((__user._perms & user_perms.bit_insert_book) == 0) {
-			System.out.printf("%s does not have permission to insert a book.\n", __user._name_first);	
+	public boolean delete(final int __perms, final int __index) {
+		if ((__perms & _perms_delete_mask) == 0) {
+			System.out.println("Database cannot insert object, permission check failed.\n");
 			return false;
 		}
-		_books.add(__book);
+		_objects.remove(__index);
 		return true;
 	}
-	public boolean remove(user __user, int index) {
-		if ((__user._perms & user_perms.bit_remove_book) == 0) {
-			System.out.printf("%s does not have permission to remove a book.\n", __user._name_first);
-			return false;
-		}
-		return _books.remove(_books.get(index));
+	public int get(final T __target) {
+		return _objects.indexOf(__target);
 	}
-	public boolean edit(user __user, int index) {
-		if ((__user._perms & user_perms.bit_modify_book) == 0) {
-			System.out.printf("%s does not have permission to edit a book.\n", __user._name_first);
-			return false;
+	public boolean dump(String __override) {
+		String dir = (__override != null) ? __override : _dir;
+		for (T t : _objects) {
+			System.out.printf("hashcode()->%d\n", t.hashCode()); 
 		}
-		book updated = _books.get(index);
-		if (!updated.edit(new Scanner(System.in))) {
-			System.out.println("Failed to edit book!\n");
-			return false;
-		}
-		_books.set(index, updated);
-		return true;
-	}
-	public int search(String name) {
-		int acc = ~(-1);
-		for (book b : _books) {
-			if (b._name.equals(name)) {
-				return acc;
-			}
-			++acc;
-		}
-		return ~(0);
-	}
-	public database() {
-		_books = new ArrayList<book>();
-	}
-	public boolean dump(String __fs_root) {
 		return false;
 	}
 }
+
+
