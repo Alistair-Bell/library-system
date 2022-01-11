@@ -1,5 +1,5 @@
 PACKAGE = alistairbell.xyz
-SOURCES = src/book.java src/user.java src/main.java
+SOURCES = $(wildcard src/*.java)
 JA      = java
 JC      = javac
 OUT     = bin

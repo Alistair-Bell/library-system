@@ -4,6 +4,7 @@
 
 package alistairbell.xyz;
 
+import java.util.Scanner;
 
 /* All books must have a genre. */
 enum book_genre {
@@ -35,6 +36,21 @@ public final class book {
 		/* Do this field last as the generator uses other fields to create an unique id. */
 		_id        = book.generate_id(this);
 	}
+	public book(Scanner __s) {
+		System.out.println("What should the name of the book be?");
+		_name      = __s.nextLine();
+		System.out.println("Who wrote the book?");
+		_author    = __s.nextLine();
+		System.out.println("What is the ISBN?");
+		_isbn      = __s.nextLine();
+		System.out.println("How many pages?");
+		_pages     = __s.nextInt();
+		System.out.println("How many words?");
+		_words     = __s.nextInt();
+		System.out.println("What genre is it?\nCOMEDY\nBIBLIOGRAPHY\nROMANTIC\nADVENTURE\nFICTION\nHISTORICAL\nNON_FICTION");
+		_genre    = book_genre.valueOf(__s.next());
+		_id       = book.generate_id(this);
+	}
 	public book(String __name, String __author, String __isbn, long __pages, long __words, book_genre __genre) {
 		_name      = __name;
 		_author    = __author;
@@ -44,10 +60,32 @@ public final class book {
 		_genre     = __genre;
 		_id        = book.generate_id(this);
 	}
+	public boolean edit(Scanner __s) {
+		System.out.println("What property to modify?");
+		String field = __s.nextLine().toLowerCase();
+		if (field.equals("name")) {
+			System.out.println("What is the new value?");	
+			_name = __s.nextLine();
+		} else if (field.equals("author")) {
+			System.out.println("What is the new value?");	
+			_author = __s.nextLine();
+		} else if (field.equals("genre")) {
+			System.out.println("What is the new value?");	
+			_genre = book_genre.valueOf(__s.next());
+		} else if (field.equals("isbn")) {
+			System.out.println("What is the new value?");	
+			_isbn = __s.nextLine();
+		} else {
+			return false;
+		}
+		return true;
+	}
 	public static long generate_id(final book __in) {
-		final long segments = 0x6b05eded9ac0e764l;
 		long accumilator = __in._name.hashCode() + __in._author.hashCode() + ((int)(__in._words / __in._pages));
-		return (accumilator & segments) + __in._genre.ordinal();
+		accumilator += __in._genre.ordinal();
+		/* Manually fix sign. */
+		accumilator &= ~(1 << 63);
+		return accumilator;
 	}
 }
 
