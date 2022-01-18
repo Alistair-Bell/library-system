@@ -53,6 +53,14 @@ public class database<T> {
 	public int get(final T __target) {
 		return _objects.indexOf(__target);
 	}
+	public T get(final int __target) {
+		try {
+			return _objects.get(__target);
+		} catch (Exception e) {
+			System.out.printf("Database get failed, exception raised, %s.\n", e.toString());
+		}
+		return null;
+	}
 	public boolean dump(String __override) {
 		String dir = (__override != null) ? __override : _dir;
 		for (T t : _objects) {

@@ -1,10 +1,8 @@
+include config.mk
+
 PACKAGE = alistairbell.xyz
 SOURCES = $(wildcard src/*.java)
-JA      = java
-JC      = javac
-OUT     = bin
 ENTRY   = main
-JCFLAGS = -d ${OUT} -Werror
 
 all: build run
 
