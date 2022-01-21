@@ -39,9 +39,13 @@ public class book {
 		_pages     = __pages;
 	}
 	@Override
+	public String toString() {
+		return String.format("%s|%s|%s|%d|%d|%d", _name, _author, _isbn, _genre.ordinal(), _words, _pages);
+	}
+	@Override
 	public int hashCode() {
+		/* This toggles the most significent bit, as the filename uses the hashcode, some OS's may freak out about a starting '-'. */
 		int mask = ~(1 << 31);
 		return (_words + _pages + _name.charAt(0) + _author.hashCode() + _genre.ordinal() + _isbn.hashCode()) & mask;
 	}
 }
-

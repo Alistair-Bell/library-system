@@ -6,6 +6,8 @@
 package alistairbell.xyz;
 
 import java.util.ArrayList;
+import java.io.File;
+import java.io.FileWriter;
 
 public class database<T> {
 	private int    _perms_modify_mask;
@@ -61,10 +63,42 @@ public class database<T> {
 		}
 		return null;
 	}
-	public boolean dump(String __override) {
-		String dir = (__override != null) ? __override : _dir;
+	private static boolean create_fs(String __target, boolean __dir) {
+		try {
+			File f = new File(__target);
+			if (!f.exists()) {
+				if (__dir) {
+					f.mkdirs();
+				} else {
+					f.createNewFile();
+				}
+			}
+		} catch (Exception e) {
+			System.out.printf("Database %s creation failed, exception raised by %s, %s.\n", (__dir) ? "directory" : "file", __target, e.toString());
+			return false;
+		}
+		return true;
+	}
+	private boolean dump_single(T __target, File __root) {
+		String out = String.format("%s/%s", __root.toString(), __target.hashCode());
+		int hash = __target.hashCode();
+		if (!create_fs(out, false))
+			return false;
+		try {
+			FileWriter w = new FileWriter(out);
+			w.write(__target.toString() + "\n");
+			w.close();
+		} catch (Exception e) {
+			System.out.printf("Database dump failed, writing to %s failed, exception rasied, %s.\n", out, e.toString());
+		}
+		return true;
+	}
+	public boolean dump() {
+		File f = new File(_dir);
+		if (!create_fs(_dir, true))
+			return false;
 		for (T t : _objects) {
-			System.out.printf("hashcode()->%d\n", t.hashCode()); 
+			dump_single(t, f);
 		}
 		return false;
 	}

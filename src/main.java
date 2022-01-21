@@ -8,7 +8,7 @@ package alistairbell.xyz;
 
 public class main {
 	public static void main(String[] __argv) {
-		database<book> db = new database<book>(1, 1, 1, "Hello World");
+		database<book> db = new database<book>(1, 1, 1, "res/books");
 
 		book[] books = { 
 			new book("Test1", "Alistair", "11111", book_genre.HISTORICAL, 100000, 100),
@@ -16,7 +16,7 @@ public class main {
 		};
 		db.insert(-1, books[0]);
 		db.insert(-1, books[1]);
-		db.dump(null);
+		db.dump();
 	}
 }
 
