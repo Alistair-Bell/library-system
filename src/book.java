@@ -38,14 +38,28 @@ public class book {
 		_words     = __words;
 		_pages     = __pages;
 	}
+	public book(final String __src) {
+		String[] split = __src.split("_");
+		_name      = split[0];
+		_author    = split[1];
+		_isbn      = split[2];
+		_genre     = book_genre.valueOf(split[3].toUpperCase());
+		_words     = Integer.valueOf(split[4]);
+		_pages     = Integer.valueOf(split[5]);
+	}
 	@Override
 	public String toString() {
-		return String.format("%s|%s|%s|%d|%d|%d", _name, _author, _isbn, _genre.ordinal(), _words, _pages);
+		return String.format("%s_%s_%s_%s_%d_%d", _name, _author, _isbn, _genre.toString(), _words, _pages);
 	}
 	@Override
 	public int hashCode() {
 		/* This toggles the most significent bit, as the filename uses the hashcode, some OS's may freak out about a starting '-'. */
 		int mask = ~(1 << 31);
 		return (_words + _pages + _name.charAt(0) + _author.hashCode() + _genre.ordinal() + _isbn.hashCode()) & mask;
+	}
+}
+final class book_functions implements database_function {
+	public Object from_string(final String __src) {
+		return new book(__src);
 	}
 }

@@ -13,10 +13,17 @@ final class account {
 	public long   _age;
 	public int    _perms;
 
-	account() {
+	public account() {
 		_name   = "Dummy";
 		_email  = "dummy@bookstore.org";
 		_id     = "DM-0000-0000";
 		_perms  = 0;
+	}
+	public account(final String __src) {
+	}
+}
+final class account_functions implements database_function {
+	public Object from_string(String __raw) {
+		return new account();
 	}
 }

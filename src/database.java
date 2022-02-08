@@ -6,6 +6,7 @@
 package alistairbell.xyz;
 
 import java.util.ArrayList;
+import java.util.Scanner;
 import java.io.File;
 import java.io.FileWriter;
 
@@ -63,7 +64,7 @@ public class database<T> {
 		}
 		return null;
 	}
-	private static boolean create_fs(String __target, boolean __dir) {
+	private static boolean create_fs(final String __target, final boolean __dir) {
 		try {
 			File f = new File(__target);
 			if (!f.exists()) {
@@ -79,7 +80,7 @@ public class database<T> {
 		}
 		return true;
 	}
-	private boolean dump_single(T __target, File __root) {
+	private boolean dump_single(final T __target, final File __root) {
 		String out = String.format("%s/%s", __root.toString(), __target.hashCode());
 		int hash = __target.hashCode();
 		if (!create_fs(out, false))
@@ -98,9 +99,46 @@ public class database<T> {
 		if (!create_fs(_dir, true))
 			return false;
 		for (T t : _objects) {
-			dump_single(t, f);
+			if (!dump_single(t, f))
+				return false;
 		}
-		return false;
+		return true;
+	}
+	private boolean load_single(final String __file, final String __root, final database_function __procedure) {
+		T loaded;
+
+		try {
+			Scanner s = new Scanner(new File(String.format("%s/%s", __root, __file)));
+			/* Probaly pretty dangerous, my java compiler warns that this may be a silly thing todo. */
+			loaded = ((T)__procedure.from_string(s.nextLine()));
+		} catch (Exception e) {
+			System.out.printf("Database load failed for %s, exception raised, %s.\n", e.toString());
+			return false;
+		}
+		/* Validate that the hashcode is the same. */
+		if (loaded.hashCode() != (Integer.valueOf(__file))) {
+			System.out.printf("Database load for %s has failed the hashcode check.\n", __file);
+			return false;
+		}
+		_objects.add(loaded);
+		return true;
+	}
+	public boolean load(final database_function __procedure) {
+		File f = new File(_dir);
+		String[] files = f.list();
+		for (String s : files) {
+			if (!load_single(s, _dir, __procedure))
+				return false;
+		}
+		return true;
+	}
+	public void list() {
+		for (T t : _objects) {
+			System.out.println(t.toString());
+		}
+	}
+	public void flush() {
+		_objects.clear();
 	}
 }
 
